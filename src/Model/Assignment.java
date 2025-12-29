@@ -12,11 +12,11 @@ public class Assignment {
 
     /**
      * Initializes object with specified attributes
-     * @param name
-     * @param dueDate
-     * @param courseCode
-     * @param status
-     * @param priority
+     * @param name Assignment name
+     * @param dueDate Assignment due date
+     * @param courseCode Assignment course code, in format CMPT000
+     * @param status Assignment status, either "In Progress", "Not started", or "Done"
+     * @param priority Assignment priority, either 1, 2, 3, where 3 is the most urgent
      */
     public Assignment(String name, LocalDate dueDate, String courseCode, String status, Integer priority ) {
         this.name = name;
@@ -90,6 +90,22 @@ public class Assignment {
         this.dueDate = date;
     }
 
+    /**
+     * Updates name of assignment
+     * @param name String of new name of the assignment
+     */
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Updates course code of assignment
+     * @param code String of new course code
+     */
+    public void updateCourseCode(String code) {
+        this.courseCode = code;
+    }
+
     public static void main(String[] args) {
         // Test if initialization worked
         Assignment assn = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "CMPT215", "Not started", 3);
@@ -126,5 +142,16 @@ public class Assignment {
             System.out.println("Error: getDueDate() not returning correct due date after using updateDueDate()");
         }
 
+        // Test updateName()
+        assn.updateName("Assignment 2");
+        if (!(assn.getName().equals("Assignment 2"))) {
+            System.out.println("Error: getName() doesn't return correct name after using updateName()");
+        }
+
+        // Test updateCourseCode()
+        assn.updateCourseCode("CMPT280");
+        if (!(assn.getCourseCode().equals("CMPT280"))) {
+            System.out.println("Error: getCourseCode() doesn't return correct course code after using updateCourseCode()");
+        }
     }
 }
