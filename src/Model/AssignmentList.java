@@ -66,30 +66,6 @@ public class AssignmentList {
         return courseCodeList;
     }
 
-    /**
-     * Returns list sorted by Urgency
-     * Earliest due date comes first, and if they have the same due date, the higher priority comes first, if same priority, name alphabetical
-     * @return ArrayList of assignments, sorted by urgency.
-     *
-     */
-    public ArrayList<Assignment> getSortedByUrgency() {
-        ArrayList<Assignment> urgentList = new ArrayList<>(assignmentList);
-        urgentList.sort(
-                Comparator.comparing(Assignment::getDueDate)
-                        .thenComparing(Comparator.comparing(Assignment::getPriority).reversed())
-                        .thenComparing(Assignment::getName));
-        return urgentList;
-    }
-
-    /**
-     * Returns list sorted by Priority
-     * @return ArrayList of assignments, sorted by priority
-     */
-    public ArrayList<Assignment> getSortedByPriority() {
-        ArrayList<Assignment> prioList = new ArrayList<>(assignmentList);
-        prioList.sort(Comparator.comparing(Assignment::getPriority).reversed());
-        return prioList;
-    }
 
 
     public static void main(String[] args) {
