@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 
 public class AssignmentTracker {
-    private SortingType currentSort;
     private SortingAlgorithm strategy;
 
-    public ArrayList<Assignment> list(ArrayList<Assignment> assignmentList) {
+    public ArrayList<Assignment> sort(ArrayList<Assignment> assignmentList) {
         return strategy.sort(assignmentList);
     }
 
