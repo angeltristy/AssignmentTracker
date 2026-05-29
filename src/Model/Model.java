@@ -1,5 +1,6 @@
 package Model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -7,15 +8,27 @@ public class Model extends Observable {
     private SortingType sort;
     private AssignmentTracker tracker = new AssignmentTracker();
     private AssignmentList list;
+    private AssignmentDAO dao;
 
+    public Model() {
+        this.list = new AssignmentList();
+        this.dao = new AssignmentDAO();
+    }
 
+    public void loadFromDatabase() throws SQLException {
+        ArrayList<Assignment> loaded = dao.loadAll();
+        for (Assignment a : loaded) {
+            list.addAssignment(a);
+            notifyObservers();
+        }
+    }
     /**
      * Adds assignment to AssignmentList
      * @param assignment
      */
-    public void addAssignment(Assignment assignment) {
+    public void addAssignment(Assignment assignment) throws SQLException {
         list.addAssignment(assignment);
-        this.setChanged();
+        dao.insert(assignment);
         this.notifyObservers();
     }
 

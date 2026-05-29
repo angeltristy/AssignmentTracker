@@ -86,7 +86,7 @@ public class AssignmentList {
 
         // Test addAssignment() and removeAssignment()
 
-        Assignment assn1 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "CMPT215", "Not started", 1);
+        Assignment assn1 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "Not started", 1, "CMPT215");
         assnlist.addAssignment(assn1);
 
         if (!(assnlist.getNumberAssignments() == 1)) {
@@ -108,8 +108,8 @@ public class AssignmentList {
         }
 
         // Test getByCourseCode()
-        Assignment assn2 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "CMPT215", "Not started", 2);
-        Assignment assn3 = new Assignment("Assignment", LocalDate.now(), "CMPT280", "Not started", 3);
+        Assignment assn2 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "Not started", 2, "CMPT215");
+        Assignment assn3 = new Assignment("Assignment", LocalDate.now(), "Not started", 3, "CMPT280");
         assnlist.addAssignment(assn2);
         assnlist.addAssignment(assn3);
 

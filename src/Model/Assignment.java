@@ -18,7 +18,7 @@ public class Assignment {
      * @param status Assignment status, either "In Progress", "Not started", or "Done"
      * @param priority Assignment priority, either 1, 2, 3, where 3 is the most urgent
      */
-    public Assignment(String name, LocalDate dueDate, String courseCode, String status, Integer priority ) {
+    public Assignment(String name, LocalDate dueDate, String status, Integer priority, String courseCode ) {
         this.name = name;
         this.dueDate = dueDate;
         this.courseCode = courseCode;
@@ -108,7 +108,7 @@ public class Assignment {
 
     public static void main(String[] args) {
         // Test if initialization worked
-        Assignment assn = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "CMPT215", "Not started", 3);
+        Assignment assn = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "Not started", 3, "CMPT215");
 
         if (!(assn.getName().equals("Assignment Name"))) {
             System.out.println("Error: getName() did not return the correct name after initialization ");
