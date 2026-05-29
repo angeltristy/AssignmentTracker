@@ -5,6 +5,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class AssignmentDAO {
+    public AssignmentDAO() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("SQLite JDBC driver not found", e);
+        }
+    }
+
     private static final String DB_URL = "jdbc:sqlite:assignments.db";
 
     public void insert(Assignment a) throws SQLException {
@@ -43,5 +51,27 @@ public class AssignmentDAO {
             }
         }
         return list;
+    }
+    public void initializeDB() throws SQLException {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS assignments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    course TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    priority INTEGER NOT NULL,
+                    dueDate TEXT NOT NULL
+                );
+                """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();) {
+                 stmt.execute(sql);
+        } catch (SQLException e) {
+                 throw new RuntimeException("Failed to initialize database");
+        }
+
+
+
     }
 }

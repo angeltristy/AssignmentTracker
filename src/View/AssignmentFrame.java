@@ -1,9 +1,12 @@
 package View;
+import Controller.Controller;
 import Model.Assignment;
+import Model.Model;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +16,30 @@ import java.util.Observer;
 public class AssignmentFrame extends JFrame implements Observer {
     private ArrayList<Assignment> assignments;
     private JComboBox<String> sortingmethod;
+    private JButton addButton;
+    private JOptionPane addAssignmentDialogue;
+    private Controller controller;
+    private JTable table;
 
 
     @Override
     public void update(Observable o, Object arg) {
+        Model model = (Model) o;
+        refreshTable(model.getAssignments());
+    }
+    public void refreshTable(ArrayList<Assignment> assignments) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        tableModel.setRowCount(0);
 
+        for (Assignment a : assignments) {
+            tableModel.addRow(new Object[] {
+                    a.getName(),
+                    a.getCourseCode(),
+                    a.getStatus(),
+                    a.getPriority(),
+                    a.getDueDate().toString(),
+            });
+        }
     }
 
     public AssignmentFrame() {
@@ -25,10 +47,22 @@ public class AssignmentFrame extends JFrame implements Observer {
         assignments = new ArrayList<>();
 
         JFrame frame = new JFrame("Assignment Tracker");
+        JPanel tracker = new JPanel();
+        frame.add(tracker);
+
+        // Add buttons for adding assignment
+        JToolBar toolbar = new JToolBar();
+        addButton = new JButton("+");
+        addButton.setFont(new Font("Arial", Font.BOLD, 26));
+
+        toolbar.add(addButton);
+        toolbar.setFloatable(false);
+        tracker.add(toolbar, new FlowLayout());
+
 
         // Assignment Tracker part
         String[] columns = {
-                "Assignment Name",
+                "Assignment",
                 "Class",
                 "Progress",
                 "Priority",
@@ -36,23 +70,28 @@ public class AssignmentFrame extends JFrame implements Observer {
         };
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
-        JTable table = new JTable(tableModel);
+        table = new JTable(tableModel);
         JScrollPane scroll = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-        tableModel.addRow(new Object[]{"1", "John Doe", "Active", "Test", "Test"});
+        tracker.add(scroll);
 
-        frame.add(scroll);
-
-
-        frame.pack();
+        // Global visual settings
         frame.setSize(890, 1080);
         frame.setResizable(true);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+    }
 
+    public void assignAddListener(ActionListener listener) {
+        this.addButton.addActionListener(listener);
+    }
 
+    public void showAddAssignmentDialogue() {
+        new AddAssignmentDialogue(this, controller).setVisible(true);
+    }
 
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 }
 

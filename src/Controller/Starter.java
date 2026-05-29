@@ -6,12 +6,10 @@ import View.AssignmentFrame;
 public class Starter {
     public static void main(String[] args) {
         // Create Assignment Frame and model objects
-        AssignmentFrame frame = new AssignmentFrame();
+        AssignmentFrame view = new AssignmentFrame();
         Model model = new Model();
-
-        // Set up Observer Pattern for MVC communication b/t model and view
-        model.addObserver(frame);
-        Controller controller = new Controller(frame, model);
-
+        model.addObserver(view);
+        Controller controller = new Controller(view, model);
+        view.setController(controller);
     }
 }

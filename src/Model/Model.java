@@ -11,16 +11,24 @@ public class Model extends Observable {
     private AssignmentDAO dao;
 
     public Model() {
-        this.list = new AssignmentList();
         this.dao = new AssignmentDAO();
+        try {
+            dao.initializeDB();
+            this.list = new AssignmentList();
+            loadFromDatabase();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void loadFromDatabase() throws SQLException {
         ArrayList<Assignment> loaded = dao.loadAll();
         for (Assignment a : loaded) {
             list.addAssignment(a);
-            notifyObservers();
         }
+        setChanged();
+        notifyObservers();
     }
     /**
      * Adds assignment to AssignmentList
@@ -29,7 +37,8 @@ public class Model extends Observable {
     public void addAssignment(Assignment assignment) throws SQLException {
         list.addAssignment(assignment);
         dao.insert(assignment);
-        this.notifyObservers();
+        setChanged();
+        notifyObservers();
     }
 
     /**
