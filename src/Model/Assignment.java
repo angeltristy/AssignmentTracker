@@ -9,6 +9,7 @@ public class Assignment {
     private String status;
     private Integer priority;
     private String courseCode;
+    private int id;
 
     /**
      * Initializes object with specified attributes
@@ -24,6 +25,16 @@ public class Assignment {
         this.courseCode = courseCode;
         this.status = status;
         this.priority = priority;
+        this.id = -1;
+    }
+
+    public Assignment(String name, LocalDate dueDate, String status, int priority, String course, int id) {
+        this.name = name;
+        this.dueDate = dueDate;
+        this.courseCode = courseCode;
+        this.status = status;
+        this.priority = priority;
+        this.id = id;
     }
 
     /**
@@ -104,6 +115,13 @@ public class Assignment {
      */
     public void updateCourseCode(String code) {
         this.courseCode = code;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     public static void main(String[] args) {

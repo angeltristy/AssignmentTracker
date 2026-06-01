@@ -15,7 +15,6 @@ public class Model extends Observable {
         try {
             dao.initializeDB();
             this.list = new AssignmentList();
-            loadFromDatabase();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -24,6 +23,7 @@ public class Model extends Observable {
 
     public void loadFromDatabase() throws SQLException {
         ArrayList<Assignment> loaded = dao.loadAll();
+        list.clear();
         for (Assignment a : loaded) {
             list.addAssignment(a);
         }
@@ -32,11 +32,17 @@ public class Model extends Observable {
     }
     /**
      * Adds assignment to AssignmentList
-     * @param assignment
      */
     public void addAssignment(Assignment assignment) throws SQLException {
         list.addAssignment(assignment);
         dao.insert(assignment);
+        setChanged();
+        notifyObservers();
+    }
+
+    public void deleteAssignment(Assignment assignment) throws SQLException {
+        list.removeAssignment(assignment);
+        dao.delete(assignment);
         setChanged();
         notifyObservers();
     }
@@ -63,6 +69,7 @@ public class Model extends Observable {
      * @return All assignments in AssignmentList, sorted according to current sorting algorithm type
      */
     public ArrayList<Assignment> getSortedAssignments() {
+
         return tracker.sort(list.getAssignments());
     }
 

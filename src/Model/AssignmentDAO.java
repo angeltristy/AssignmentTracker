@@ -28,12 +28,28 @@ public class AssignmentDAO {
             stmt.setString(5, a.getDueDate().toString());
 
             stmt.executeUpdate();
+
+            // Get ID
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                a.setId(keys.getInt(1));
+            }
+        }
+    }
+
+    public void delete(Assignment a) throws SQLException {
+        String sql = "DELETE FROM assignments WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, a.getId());
+            stmt.executeUpdate();
         }
     }
 
     public ArrayList<Assignment> loadAll() throws SQLException {
         ArrayList<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM assignments";
+        String sql = "SELECT name, course, status, priority, dueDate, id FROM assignments";
 
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
@@ -45,7 +61,8 @@ public class AssignmentDAO {
                         LocalDate.parse(rs.getString("dueDate")),
                         rs.getString("status"),
                         rs.getInt("priority"),
-                        rs.getString("course")
+                        rs.getString("course"),
+                        rs.getInt("id")
                 );
                 list.add(a);
             }

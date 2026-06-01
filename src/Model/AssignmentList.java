@@ -164,4 +164,8 @@ public class AssignmentList {
 //            System.out.println("Error: List isn't sorted properly by getSortedByUrgency()");
 //        }
     }
+
+    public void clear() {
+        assignments.clear();
+    }
 }
