@@ -4,14 +4,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import static Model.SortingType.PRIORITY;
+
 public class Model extends Observable {
     private SortingType sort;
-    private AssignmentTracker tracker = new AssignmentTracker();
+    private AssignmentTracker tracker;
     private AssignmentList list;
     private AssignmentDAO dao;
 
     public Model() {
         this.dao = new AssignmentDAO();
+        tracker = new AssignmentTracker();
+        this.sort = PRIORITY;
+        tracker.changeSorting(sort);
         try {
             dao.initializeDB();
             this.list = new AssignmentList();

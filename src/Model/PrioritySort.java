@@ -13,5 +13,4 @@ public class PrioritySort implements SortingAlgorithm {
         assignmentList.sort(Comparator.comparing(Assignment::getPriority).reversed());
         return assignmentList;
     }
-
 }

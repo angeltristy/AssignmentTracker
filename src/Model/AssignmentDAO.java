@@ -87,8 +87,5 @@ public class AssignmentDAO {
         } catch (SQLException e) {
                  throw new RuntimeException("Failed to initialize database");
         }
-
-
-
     }
 }

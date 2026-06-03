@@ -17,5 +17,4 @@ public class UrgencySort implements SortingAlgorithm {
                         .thenComparing(Assignment::getName));
         return assignmentList;
     }
-
 }
