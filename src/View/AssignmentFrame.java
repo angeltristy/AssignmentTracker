@@ -4,15 +4,13 @@ import Model.Assignment;
 import Model.Model;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.event.MenuKeyListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,6 +24,10 @@ public class AssignmentFrame extends JFrame implements Observer {
     private JButton sortMenu;
     private JPopupMenu sortPopup;
     private JPopupMenu rightClickPopup;
+    private JMenuItem prioSortOption;
+    private JMenuItem urgentSortOption;
+    private JMenuItem randSortOption;
+    private JMenuItem deleteButton;
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -69,12 +71,13 @@ public class AssignmentFrame extends JFrame implements Observer {
 
         sortMenu = new JButton();
         sortPopup = new JPopupMenu();
-        JMenuItem priorityOption = new JMenuItem("Priority");
-        JMenuItem urgencyOption = new JMenuItem("Urgency");
-        JMenuItem randomOption = new JMenuItem("Random");
-        sortPopup.add(priorityOption);
-        sortPopup.add(urgencyOption);
-        sortPopup.add(randomOption);
+        prioSortOption = new JMenuItem("Priority");
+        urgentSortOption = new JMenuItem("Urgency");
+        randSortOption = new JMenuItem("Random");
+
+        sortPopup.add(prioSortOption);
+        sortPopup.add(urgentSortOption);
+        sortPopup.add(randSortOption);
         toolbar.add(sortMenu);
 
         // Assignment Tracker part
@@ -94,9 +97,9 @@ public class AssignmentFrame extends JFrame implements Observer {
 
         // Right click popup menu on table cell
         rightClickPopup = new JPopupMenu();
-        JMenuItem deleteButton = new JMenuItem("Delete");
+        deleteButton = new JMenuItem("Delete");
         rightClickPopup.add(deleteButton);
-        table.setComponentPopupMenu(rightClickPopup);
+
 
 
 
@@ -122,8 +125,32 @@ public class AssignmentFrame extends JFrame implements Observer {
         sortPopup.show(sortMenu, 0, sortMenu.getHeight());
     }
 
-    public void assignRightClickListener(MouseListener listener) {
+    public void showTableMenu(MouseEvent e) {
+        rightClickPopup.show(e.getComponent(), e.getX(), e.getY());
+    }
+
+    public void assignPrioSortListener(ActionListener listener) {
+        prioSortOption.addActionListener(listener);
+    }
+
+    public void assignUrgentSortListener(ActionListener listener) {
+        urgentSortOption.addActionListener(listener);
+    }
+
+    public void assignRandSortListener(ActionListener listener) {
+        randSortOption.addActionListener(listener);
+    }
+
+    public void assignDeleteListener(ActionListener listener) {
+        this.deleteButton.addActionListener(listener);
+    }
+
+    public void assignTableListener(MouseListener listener) {
         this.table.addMouseListener(listener);
+    }
+
+    public int getSelectedRow() {
+        return table.getSelectedRow();
     }
 
 }
