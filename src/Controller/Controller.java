@@ -2,13 +2,9 @@ package Controller;
 
 import Model.Model;
 import Model.Assignment;
-import View.AssignmentFrame;
+import View.Frame;
 
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuKeyEvent;
-import javax.swing.event.MenuKeyListener;
-import javax.swing.event.MenuListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -19,21 +15,22 @@ import java.time.LocalDate;
 import static Model.SortingType.*;
 
 public class Controller {
-    private AssignmentFrame view;
+    private Frame view;
     private Model model;
 
-    public Controller(AssignmentFrame v, Model m) {
+    public Controller(Frame v, Model m) {
         this.model = m;
         this.view = v;
 
         model.addObserver(view);
 
         try {
-            model.loadFromDatabase();
+            model.loadAssignmentsFromDB();
+            model.loadRemindersFromDB();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        // Create and assign an ActionListener to the Add Assignment button
+        // Create and assign an ActionListener for each assignment-related button
         ActionListener addListener = new AddButtonListener();
         this.view.assignAddListener(addListener);
 
@@ -68,8 +65,6 @@ public class Controller {
         model.addAssignment(assn);
     }
 
-
-
     public class DeleteListener implements ActionListener {
 
         @Override
@@ -93,24 +88,24 @@ public class Controller {
     public class PrioSortListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.changeSorting(PRIORITY);
-            view.refreshTable(model.getSortedAssignments());
+            model.changeAssignmentSort(PRIORITY);
+            view.refreshAssignmentTable(model.getSortedAssignments());
         }
     }
 
     public class UrgentSortListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.changeSorting(URGENCY);
-            view.refreshTable(model.getSortedAssignments());
+            model.changeAssignmentSort(URGENCY);
+            view.refreshAssignmentTable(model.getSortedAssignments());
         }
     }
 
     public class RandSortListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.changeSorting(RANDOM);
-            view.refreshTable(model.getSortedAssignments());
+            model.changeAssignmentSort(RANDOM);
+            view.refreshAssignmentTable(model.getSortedAssignments());
         }
     }
 

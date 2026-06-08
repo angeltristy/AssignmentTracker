@@ -3,7 +3,7 @@ package Model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Assignment {
+public class Assignment implements Task {
     private String name;
     private LocalDate dueDate;
     private String status;

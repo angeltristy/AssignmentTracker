@@ -2,9 +2,8 @@ package Model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 
-public class AssignmentList {
+public class AssignmentList<T extends Task> implements TaskList<Assignment> {
     private ArrayList<Assignment> assignments;
 
     /**
@@ -17,7 +16,7 @@ public class AssignmentList {
     /**
      * Getter for assignment list
      */
-    public ArrayList<Assignment> getAssignments() {
+    public ArrayList<Assignment> getList() {
         return assignments;
     }
 
@@ -25,7 +24,7 @@ public class AssignmentList {
      * Adds an assignment to the assignmentList
      * @param assn Assignment object to be added
      */
-    public void addAssignment(Assignment assn) {
+    public void addItem(Assignment assn) {
         assignments.add(assn);
     }
 
@@ -33,7 +32,7 @@ public class AssignmentList {
      * Removes an assignment from the assignmentList
      * @param assn Assignment object to be removed
      */
-    public void removeAssignment(Assignment assn) {
+    public void deleteItem(Assignment assn) {
         assignments.remove(assn);
     }
 
@@ -55,7 +54,7 @@ public class AssignmentList {
      * Shows number of assignments to do
      * @return int for number of assignments
      */
-    public int getNumberAssignments() {
+    public int getNumberItems() {
         return assignments.size();
     }
 
@@ -80,26 +79,26 @@ public class AssignmentList {
         // Test initialized Assignment List
         AssignmentList assnlist = new AssignmentList();
 
-        if (!(assnlist.getNumberAssignments() == 0)) {
+        if (!(assnlist.getNumberItems() == 0)) {
             System.out.println("Error: getNumberAssignments() does not return 0 after initializing assignment list");
         }
 
         // Test addAssignment() and removeAssignment()
 
         Assignment assn1 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "Not started", 1, "CMPT215");
-        assnlist.addAssignment(assn1);
+        assnlist.addItem(assn1);
 
-        if (!(assnlist.getNumberAssignments() == 1)) {
+        if (!(assnlist.getNumberItems() == 1)) {
             System.out.println("Error: getNumberAssignments() does not return 1 after using addAssignment() ");
         }
 
-        assnlist.removeAssignment(assn1);
-        if (!(assnlist.getNumberAssignments() == 0)) {
+        assnlist.deleteItem(assn1);
+        if (!(assnlist.getNumberItems() == 0)) {
             System.out.println("Error: getNumberAssignments() does not return 0 after using removeAssignment() ");
         }
 
         // Test getOverdue()
-        assnlist.addAssignment(assn1);
+        assnlist.addItem(assn1);
         ArrayList<Assignment> testList;
         testList = assnlist.getOverdue();
 
@@ -110,8 +109,8 @@ public class AssignmentList {
         // Test getByCourseCode()
         Assignment assn2 = new Assignment("Assignment Name", LocalDate.of(2025, 10, 28), "Not started", 2, "CMPT215");
         Assignment assn3 = new Assignment("Assignment", LocalDate.now(), "Not started", 3, "CMPT280");
-        assnlist.addAssignment(assn2);
-        assnlist.addAssignment(assn3);
+        assnlist.addItem(assn2);
+        assnlist.addItem(assn3);
 
         ArrayList<Assignment> courseList;
         courseList = assnlist.getByCourseCode("CMPT215");

@@ -2,12 +2,13 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
-public class RandomSort implements SortingAlgorithm {
+public class RandomSort<T extends Task> implements SortingAlgorithm<T>  {
 
     @Override
-    public ArrayList<Assignment> sort(ArrayList<Assignment> assignments) {
-        Collections.shuffle(assignments);
-        return assignments;
+    public ArrayList<T> sort(ArrayList<T> items) {
+        Collections.shuffle(items);
+        return items;
     }
 }
