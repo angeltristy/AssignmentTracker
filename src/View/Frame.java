@@ -7,43 +7,60 @@ import Model.Reminder;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Frame extends JFrame implements Observer {
-    private ArrayList<Assignment> assignments;
-    private JComboBox<String> sortingmethod;
-    private JButton aAddButton;
-    private JOptionPane addAssignmentDialogue;
     private Controller controller;
+
+    // Assignment data
+    private ArrayList<Assignment> assignments;
+
+    // Assignment table
     private JTable aTable;
+
+    // Assignment sort menu
     private JButton aSortMenu;
     private JPopupMenu aSortPopup;
-    private JPopupMenu aRightClickPopup;
     private JMenuItem aPrioSortOption;
     private JMenuItem aUrgentSortOption;
     private JMenuItem aRandSortOption;
+
+    // Assignment add + remove
+    private JButton aAddButton;
+    private JOptionPane addAssignmentDialogue;
+    private JPopupMenu aRightClickPopup;
     private JMenuItem aDeleteButton;
 
+    // Reminder Data
     private ArrayList<Reminder> reminders;
 
-    private JButton rAddButton;
-    private JOptionPane addReminderDialogue;
-
+    // Reminder table
     private JTable rTable;
+
+    // Reminder sort menu/popup
     private JButton rSortMenu;
     private JPopupMenu rSortPopup;
-    private JPopupMenu rRightClickPopup;
     private JMenuItem rPrioSortOption;
     private JMenuItem rUrgentSortOption;
     private JMenuItem rRandSortOption;
+
+    // Reminder add + remove
+    private JButton rAddButton;
+    private JOptionPane addReminderDialogue;
+    private JPopupMenu rRightClickPopup;
     private JMenuItem rDeleteButton;
 
-
+    // Timer
+    private JLabel timerLabel;
+    private Timer swingTimer;
+    private Duration duration;
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -54,7 +71,10 @@ public class Frame extends JFrame implements Observer {
         Model model = (Model) o;
         refreshAssignmentTable(model.getAssignmentList());
         refreshReminderTable(model.getReminderList());
+
+        this.duration = model.getRemainingTime();
     }
+
     public void refreshAssignmentTable(ArrayList<Assignment> assignments) {
         DefaultTableModel aTableModel = (DefaultTableModel) aTable.getModel();
         aTableModel.setRowCount(0);
@@ -70,7 +90,6 @@ public class Frame extends JFrame implements Observer {
         }
     }
 
-
     private void refreshReminderTable(ArrayList<Reminder> reminders) {
         DefaultTableModel rTableModel = (DefaultTableModel) rTable.getModel();
         rTableModel.setRowCount(0);
@@ -85,12 +104,22 @@ public class Frame extends JFrame implements Observer {
     }
 
     public Frame() {
-        // Initialize with assignments
+        // Initialize
         assignments = new ArrayList<>();
         reminders = new ArrayList<>();
 
         JFrame frame = new JFrame("Assignment Tracker");
+
+        // Add trackers to frame
+        frame.setLayout(new BorderLayout());
+        JPanel aTracker = new JPanel();
         JPanel rTracker = new JPanel();
+
+        //------------------------------------------------------------------------------
+        // REMINDER
+        //------------------------------------------------------------------------------
+
+        // Reminder toolbar
         JToolBar rToolbar = new JToolBar();
         rAddButton = new JButton("+");
         rAddButton.setFont(new Font("Arial", Font.BOLD, 26));
@@ -98,6 +127,7 @@ public class Frame extends JFrame implements Observer {
         rToolbar.setFloatable(false);
         rTracker.add(rToolbar, new FlowLayout());
 
+        // Reminder sort menu
         rSortMenu = new JButton();
         rSortPopup = new JPopupMenu();
         rPrioSortOption = new JMenuItem("Priority");
@@ -107,14 +137,15 @@ public class Frame extends JFrame implements Observer {
         rSortPopup.add(rPrioSortOption);
         rSortPopup.add(rUrgentSortOption);
         rSortPopup.add(rRandSortOption);
-        rToolbar.add(rSortMenu);
+        rToolbar.add(rSortMenu); // Add toolbar
 
-        // Assignment Tracker part
-        String[] columns = {
-                "Name",
-                "Priority",
-                "Due Date"
-        };
+        // Reminder delete right click menu
+        rRightClickPopup = new JPopupMenu();
+        rDeleteButton = new JMenuItem("Delete");
+        rRightClickPopup.add(rDeleteButton);
+
+        // Reminder Tracker table
+        String[] columns = {"Name", "Priority", "Due Date"};
         DefaultTableModel rTableModel = new DefaultTableModel(columns, 0);
 
         rTable = new JTable(rTableModel);
@@ -122,18 +153,11 @@ public class Frame extends JFrame implements Observer {
         JScrollPane rScroll = new JScrollPane(rTable);
         rTracker.add(rScroll);
 
-        // Right click popup menu on table cell
-        rRightClickPopup = new JPopupMenu();
-        rDeleteButton = new JMenuItem("Delete");
-        rRightClickPopup.add(rDeleteButton);
+        //------------------------------------------------------------------------------
+        // ASSIGNMENT
+        //------------------------------------------------------------------------------
 
-        // Add trackers to frame
-        frame.setLayout(new BorderLayout());
-        JPanel aTracker = new JPanel();
-        frame.add(rTracker, BorderLayout.NORTH);
-        frame.add(aTracker, BorderLayout.CENTER);
-
-        // Add buttons for adding assignment and sorting pop-up menu
+        // Assignment toolbar
         JToolBar aToolbar = new JToolBar();
         aAddButton = new JButton("+");
         aAddButton.setFont(new Font("Arial", Font.BOLD, 26));
@@ -141,6 +165,7 @@ public class Frame extends JFrame implements Observer {
         aToolbar.setFloatable(false);
         aTracker.add(aToolbar, new FlowLayout());
 
+        // Assignment sort menu
         aSortMenu = new JButton();
         aSortPopup = new JPopupMenu();
         aPrioSortOption = new JMenuItem("Priority");
@@ -152,14 +177,8 @@ public class Frame extends JFrame implements Observer {
         aSortPopup.add(aRandSortOption);
         aToolbar.add(aSortMenu);
 
-        // Assignment Tracker part
-        String[] aColumns = {
-                "Assignment",
-                "Class",
-                "Progress",
-                "Priority",
-                "Due Date"
-        };
+        // Assignment Tracker table
+        String[] aColumns = {"Assignment", "Class", "Progress", "Priority", "Due Date"};
         DefaultTableModel aTableModel = new DefaultTableModel(aColumns, 0);
 
         aTable = new JTable(aTableModel);
@@ -167,18 +186,34 @@ public class Frame extends JFrame implements Observer {
         JScrollPane aScroll = new JScrollPane(aTable);
         aTracker.add(aScroll);
 
-        // Right click popup menu on table cell
+        // Assignment delete right click menu
         aRightClickPopup = new JPopupMenu();
         aDeleteButton = new JMenuItem("Delete");
         aRightClickPopup.add(aDeleteButton);
 
-        // Global visual settings
+        //------------------------------------------------------------------------------
+        // TIMER
+        //------------------------------------------------------------------------------
+
+        timerLabel = new JLabel("", SwingConstants.CENTER);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+
+        //------------------------------------------------------------------------------
+        // VISUAL SETTINGS
+        //------------------------------------------------------------------------------
+
+        frame.add(rTracker, BorderLayout.NORTH);
+        frame.add(aTracker, BorderLayout.SOUTH);
+        frame.add(timerLabel, BorderLayout.CENTER);
+
         frame.setSize(890, 1080);
         frame.setResizable(true);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         refreshAssignmentTable(assignments);
         refreshReminderTable(reminders);
+
+        startUiTimer();
     }
 
     public void assignAddListener(ActionListener listener) {
@@ -221,5 +256,37 @@ public class Frame extends JFrame implements Observer {
 
     public int getSelectedRow() {
         return aTable.getSelectedRow();
+    }
+
+    public void startUiTimer() {
+        // Triggers UI repaint action once every second (1000ms)
+        swingTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateLabel();
+            }
+        });
+        swingTimer.start();
+    }
+
+    private void updateLabel() {
+        if (controller == null) {
+            return;
+        }
+
+        duration = controller.getRemainingTime();
+
+        if (duration == null || duration.isNegative() || duration.isZero()) {
+            timerLabel.setText("00:00:00:00");
+            return;
+        }
+
+        long totalSeconds = duration.getSeconds();
+        long days = totalSeconds / 86400;
+        long hours = (totalSeconds % 86400) / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        timerLabel.setText(String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds));
     }
 }

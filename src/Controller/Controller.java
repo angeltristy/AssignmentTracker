@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 
 import static Model.SortingType.*;
@@ -21,15 +22,19 @@ public class Controller {
     public Controller(Frame v, Model m) {
         this.model = m;
         this.view = v;
+        view.setController(this);
 
         model.addObserver(view);
 
         try {
             model.loadAssignmentsFromDB();
             model.loadRemindersFromDB();
+            model.loadTimerFromDB();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        view.startUiTimer();
+
         // Create and assign an ActionListener for each assignment-related button
         ActionListener addListener = new AddButtonListener();
         this.view.assignAddListener(addListener);
@@ -54,6 +59,10 @@ public class Controller {
 
     }
 
+    public Duration getRemainingTime() {
+        return model.getRemainingTime();
+    }
+
     public class AddButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             view.showAddAssignmentDialogue();
@@ -66,7 +75,6 @@ public class Controller {
     }
 
     public class DeleteListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             int row = view.getSelectedRow();
@@ -126,13 +134,12 @@ public class Controller {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-
         }
+
         private void showPopup(MouseEvent e) {
             if (e.isPopupTrigger()) {
                 JTable table = (JTable) e.getSource();

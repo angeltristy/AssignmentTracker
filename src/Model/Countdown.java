@@ -4,31 +4,34 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Countdown {
-    LocalDateTime now;
-    LocalDateTime then;
-    boolean active;
+    private LocalDateTime target;;
+
+    public Countdown(LocalDateTime targetTime) {
+        this.target = targetTime;
+    }
 
     public Countdown() {
-        now = LocalDateTime.now();
     }
 
-    public void set(LocalDateTime d) {
-        then = d;
-        active = true;
+    public void set(LocalDateTime targetTime) {
+        this.target = targetTime;
     }
 
-    public void cancel() {
-        active = false;
+    public LocalDateTime getTarget() {
+        return this.target;
     }
 
-    public LocalDateTime getRemaining() {
-        if (!active) {
-            return null;
+
+
+    /**
+     * Calculates raw duration remaining.
+     * Returns Duration.ZERO if the countdown has expired.
+     */
+    public Duration getRemainingDuration() {
+        if (target == null) {
+            return Duration.ZERO;
         }
-        Duration diff =  Duration.between(now, then);
-        long days = diff.toDays();
-        long minutes = diff.toMinutes();
-        long seconds = diff.toSeconds();
-        return LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(), (int) days, (int) minutes, (int) seconds);
+
+        return Duration.between(LocalDateTime.now(), target);
     }
 }

@@ -1,8 +1,10 @@
 package Model;
 
-import java.sql.Array;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Observable;
 
 import static Model.SortingType.PRIORITY;
@@ -10,24 +12,26 @@ import static Model.SortingType.PRIORITY;
 public class Model extends Observable {
     // Assignment
     private SortingType assignmentSort;
-    private TaskTracker assignmentTracker;
-    private AssignmentList assignmentList;
-    private AssignmentDAO assignmentDAO;
+    private final TaskTracker<Assignment> assignmentTracker;
+    private final AssignmentList<Assignment> assignmentList;
+    private final AssignmentDAO assignmentDAO;
 
     // Reminder
     private SortingType reminderSort;
-    private TaskTracker reminderTracker;
-    private ReminderList reminderList;
-    private ReminderDAO reminderDAO;
+    private final TaskTracker<Reminder> reminderTracker;
+    private final ReminderList<Reminder> reminderList;
+    private final ReminderDAO reminderDAO;
 
     // Timer
     private Countdown timer;
+    private final TimerDAO timerDAO;
 
     public Model() {
         // Initialize reminder stuff
         this.reminderDAO = new ReminderDAO();
         this.reminderTracker = new TaskTracker<Reminder>();
         this.reminderSort = PRIORITY;
+        this.reminderList = new ReminderList<Reminder>();
         reminderTracker.changeSorting(reminderSort);
 
         // Initialize assignment stuff
@@ -35,19 +39,25 @@ public class Model extends Observable {
         this.assignmentTracker = new TaskTracker<Assignment>();
         this.assignmentSort = PRIORITY;
         assignmentTracker.changeSorting(assignmentSort);
+        assignmentList = new AssignmentList<Assignment>();
+
+        // Timer
+        this.timerDAO = new TimerDAO();
+        try {
+            timerDAO.initializeDB();
+            loadTimerFromDB();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(new java.io.File("timers.db").getAbsolutePath());
 
         // Initialize DBs
         try {
             reminderDAO.initializeDB();
             assignmentDAO.initializeDB();
-            this.assignmentList = new AssignmentList();
-            this.reminderList = new ReminderList();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        // Initialize timer
-
     }
 
     //------------------------------------------------------------------------------
@@ -82,10 +92,19 @@ public class Model extends Observable {
         notifyObservers();
     }
 
+    public void loadTimerFromDB() throws SQLException {
+        String targetDate = timerDAO.getTimer();
+
+
+        if (targetDate == null) {
+            timer = new Countdown();
+        } else {
+            timer = new Countdown(LocalDateTime.parse(targetDate));
+        }
+    }
     //------------------------------------------------------------------------------
     // ASSN METHODS
     //------------------------------------------------------------------------------
-
 
     /**
      * Adds assignment to AssignmentList
@@ -111,7 +130,7 @@ public class Model extends Observable {
 
     /**
      * Changes the sorting algorithm type
-     * @param sort
+     * @param sort which algo to use
      */
     public void changeAssignmentSort(SortingType sort) {
         this.assignmentSort = sort;
@@ -119,6 +138,7 @@ public class Model extends Observable {
         this.setChanged();
         this.notifyObservers();
     }
+
     //------------------------------------------------------------------------------
     // REMINDER METHODS
     //------------------------------------------------------------------------------
@@ -146,7 +166,7 @@ public class Model extends Observable {
     }
 
     /**
-     * @param sort To change it to
+     * @param sort SortingType to change it to
      */
     public void changeReminderSort(SortingType sort) {
         this.reminderSort = sort;
@@ -156,9 +176,54 @@ public class Model extends Observable {
     }
 
     //------------------------------------------------------------------------------
+    // TIMER METHODS
+    //------------------------------------------------------------------------------
+
+    /**
+     * @param d Target date/time
+     */
+    public void setTimer(LocalDateTime d) {
+        timer = new Countdown(d);
+
+        try {
+            timerDAO.setTimer(d);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Cancels set time
+     */
+    public void cancelTimer() {
+        try {
+            timerDAO.clear();
+            timer = new Countdown(); // reset memory state
+            setChanged();
+            notifyObservers();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return Remaining time
+     */
+    public Duration getRemainingTime() {
+        Duration duration = timer.getRemainingDuration();
+        return Objects.requireNonNullElse(duration, Duration.ZERO);
+    }
+
+    //------------------------------------------------------------------------------
     // ACCESSOR METHODS
     //------------------------------------------------------------------------------
 
+    /**
+     * @return List of reminders from database
+     */
     public ArrayList<Reminder> getReminderList() { return reminderList.getList();}
 
     /**
@@ -186,5 +251,4 @@ public class Model extends Observable {
     public SortingType getSortingType() {
         return this.assignmentSort;
     }
-
 }
